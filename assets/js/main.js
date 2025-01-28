@@ -1,4 +1,4 @@
-//  inventario
+//  Inventario
 const inventario = [
   { sku: 8345, descripcion: "Assassins Creed Mirage PS5", precio: 35, stock: 16 },
   { sku: 4441, descripcion: "Mortal Kombat 1 PS5", precio: 44, stock: 5 },
@@ -26,7 +26,7 @@ function solicitarNumero(mensaje, validacion) {
   return Number(numero);
 }
 
-// Función para validar el SKU ingresado
+// Función para validar el SKU ingresadog
 function esSkuValido(input) {
   return !isNaN(input) && input.trim() !== "" && Number(input) > 0;
 }

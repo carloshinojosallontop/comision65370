@@ -1,5 +1,4 @@
-// Inventario disponible de productos
-
+//  inventario
 const inventario = [
   { sku: 8345, descripcion: "Assassins Creed Mirage PS5", precio: 35, stock: 16 },
   { sku: 4441, descripcion: "Mortal Kombat 1 PS5", precio: 44, stock: 5 },
@@ -13,57 +12,84 @@ const inventario = [
   { sku: 5661, descripcion: "Just Dance 2024 NSW", precio: 49, stock: 10 }
 ];
 
-function iniciarSimulador() {
-  // Ingresar codigo del producto
-  let ingresarSku;
+// Función para buscar un producto en el inventario por SKU
+function buscarProductoPorSku(sku) {
+  return inventario.find(item => item.sku === sku);
+}
 
+// Función para validar y solicitar un número (SKU o cantidad)
+function solicitarNumero(mensaje, validacion) {
+  let numero;
   do {
-    ingresarSku = prompt("Ingresa el código del producto: (solo numeros)");
-  } while (isNaN(ingresarSku) || ingresarSku.trim() === "");
+    numero = prompt(mensaje);
+  } while (!validacion(numero));
+  return Number(numero);
+}
 
-  ingresarSku = Number(ingresarSku);
+// Función para validar el SKU ingresado
+function esSkuValido(input) {
+  return !isNaN(input) && input.trim() !== "" && Number(input) > 0;
+}
 
-  let skuIngresado = inventario.find(item => item.sku === ingresarSku);
+// Función para validar la cantidad de compra
+function esCantidadValida(input, maxCantidad) {
+  return !isNaN(input) && input.trim() !== "" && Number(input) > 0 && Number(input) <= maxCantidad;
+}
 
-  // Consultar inventario
-  function consultarInventario() {
-    if (skuIngresado) {
-      if (skuIngresado.stock > 0) {
+// Función para calcular el total de la compra
+function calcularTotal(precio, cantidad, impuesto) {
+  return precio * cantidad * (1 + impuesto);
+}
+
+// Función principal para iniciar el simulador
+function iniciarSimulador() {
+  const impuesto = 0.07; // Impuesto del 7%
+  let continuar = true;
+
+  while (continuar) {
+    const skuIngresado = solicitarNumero(
+      "Ingresa el código del producto (solo números):",
+      esSkuValido
+    );
+
+    const producto = buscarProductoPorSku(skuIngresado);
+
+    if (producto) {
+      if (producto.stock > 0) {
         alert(
-          `Producto encontrado: ${skuIngresado.descripcion}\n` +
-          `Precio por unidad: $${skuIngresado.precio}\n` +
-          `Stock disponible: ${skuIngresado.stock}`
+          `Producto encontrado: ${producto.descripcion}\n` +
+          `Precio por unidad: $${producto.precio}\n` +
+          `Stock disponible: ${producto.stock}`
         );
 
-        let deseaComprar = confirm("¿Desea comprar este producto?");
+        const deseaComprar = confirm("¿Desea comprar este producto?");
         if (deseaComprar) {
-          let cantidad;
-          do {
-            cantidad = prompt(`¿Cuántas unidades desea comprar? (Stock disponible: ${skuIngresado.stock})`);
-          } while (isNaN(cantidad) || cantidad.trim() === "" || Number(cantidad) <= 0 || Number(cantidad) > skuIngresado.stock);
+          const cantidad = solicitarNumero(
+            `¿Cuántas unidades desea comprar? (Stock disponible: ${producto.stock})`,
+            input => esCantidadValida(input, producto.stock)
+          );
 
-          cantidad = Number(cantidad);
-          const impuesto = 7/100; // Impuesto del 7%
-          const total = skuIngresado.precio * cantidad * (1 + impuesto);
-          skuIngresado.stock -= cantidad;
+          const total = calcularTotal(producto.precio, cantidad, impuesto);
+          producto.stock -= cantidad;
 
           alert(
-            `Has comprado ${cantidad} unidades de ${skuIngresado.descripcion}.\n` +
-            `El total a pagar con un impuesto del 7% es: $${total.toFixed(2)}\n` +
+            `Has comprado ${cantidad} unidades de ${producto.descripcion}.\n` +
+            `El total a pagar con un impuesto del 7% es: $${total.toFixed(2)}.\n` +
             `Gracias por tu compra.`
           );
         } else {
           alert("Gracias por visitar nuestra tienda. ¡Hasta luego!");
         }
       } else {
-        alert(`El producto ${skuIngresado.descripcion} está agotado.`);
+        alert(`El producto ${producto.descripcion} está agotado.`);
       }
     } else {
-      alert("El producto no está en inventario.");
+      continuar = confirm("El producto no está en inventario. ¿Desea buscar otro producto?");
+      if (!continuar) {
+        alert("Gracias por visitar nuestra tienda. ¡Hasta luego!");
+      }
     }
   }
-
-  consultarInventario();
 }
 
 document.getElementById("ejecutarPrograma").addEventListener("click", iniciarSimulador);

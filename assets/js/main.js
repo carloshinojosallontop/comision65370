@@ -1,4 +1,4 @@
-//  Inventario
+// Inventario
 const inventario = [
   { sku: 8345, descripcion: "Assassins Creed Mirage PS5", precio: 35, stock: 16 },
   { sku: 4441, descripcion: "Mortal Kombat 1 PS5", precio: 44, stock: 5 },
@@ -26,7 +26,7 @@ function solicitarNumero(mensaje, validacion) {
   return Number(numero);
 }
 
-// Función para validar el SKU ingresadog
+// Función para validar el SKU ingresado
 function esSkuValido(input) {
   return !isNaN(input) && input.trim() !== "" && Number(input) > 0;
 }
@@ -73,10 +73,16 @@ function iniciarSimulador() {
           producto.stock -= cantidad;
 
           alert(
-            `Has comprado ${cantidad} unidades de ${producto.descripcion}.\n` +
-            `El total a pagar con un impuesto del 7% es: $${total.toFixed(2)}.\n` +
-            `Gracias por tu compra.`
+            `Tu orden es ${cantidad} unidades de ${producto.descripcion}.\n` +
+            `El total a pagar con impuesto(7%) es: $${total.toFixed(2)}.\n\n` +
+            `Gracias por tu pedido.`
           );
+
+          // Preguntar si desea seguir comprando
+          continuar = confirm("¿Desea seguir comprando?");
+          if (!continuar) {
+            alert("Gracias por tu compra. ¡Hasta pronto!");
+          }
         } else {
           alert("Gracias por visitar nuestra tienda. ¡Hasta luego!");
         }
